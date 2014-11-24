@@ -6,7 +6,7 @@
 * The information will then be used in client view, admin, edit and delete pages
 */
 require_once "config.php";
-require_once 'phpLib/OrganizeFolder.php';
+require_once 'OrganizeFolder.php';
 $connection = mysqli_connect (DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 // Check connection
 if (mysqli_connect_errno()) {
