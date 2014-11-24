@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/index.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/index.js"></script>
+	<title>Audio-Graphic Novel Classroom</title>
+</head>
+<body>
+	<div class="container signinForm" id="signinForm" style="display:none;">
+			<form class="signinContent form-signin col-sm-2" role="form">
+				<h2 class="form-signin-heading">Sign in</h2>
+				<input type="text" class="form-control" placeholder="Account" autofocus></input>
+				<input type="password" class="form-control" placeholder="Password"></input>
+				<label class="checkbox remember">
+					<input type="checkbox" value="remember-me">Remember Me</input><br><br>
+				</label>
+				<button class="btn btn-lg btn-primary btn-block" id="login">Sign in</button>
+				<button class="btn btn-lg btn-primary btn-block" id="closeForm")>Cancel</button>
+			</form>
+		</div>
+		
+	</div>
+	<a class="btn btn-lg btn-primary signin col-sm-2" id="signinButton">Sign in</a>
+	
+	<div id="carousel-selector" class="carousel slide" style="height:100vh;" data-ride="carousel">
+		<ol class="carousel-indicators">
+		</ol>
+		
+		<div class="carousel-inner" style="position:absolute;" id="sceneSelector">
+			
+		</div>
+		
+		<!--Controls-->
+		<a class="left carousel-control" href="#carousel-selector" role="button" data-slide="prev">
+			<span class="glyphicon glyphicon-chevron-left"></span>
+		</a>
+		<a class="right carousel-control" href="#carousel-selector" role="button" data-slide="next">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+		</a>
+	</div>
+</body>
+
+</html>

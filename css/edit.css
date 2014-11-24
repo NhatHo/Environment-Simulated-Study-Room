@@ -1,0 +1,16 @@
+.panelSize {
+	padding: 0;
+}
+
+.panelbody {
+	height: auto;
+}
+
+.row{
+	margin-right: 0px;
+	margin-left: 0px;
+}
+
+.paneltitle {
+	text-align: center;
+}

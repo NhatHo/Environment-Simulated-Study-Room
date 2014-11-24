@@ -1,0 +1,65 @@
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+}
+
+.empty {
+	margin-top:18%;
+}
+
+.signin {
+	z-index: 10; 
+	position:absolute;
+	right: 1%;
+	top: 2%;
+}
+
+.signinForm {
+	position:absolute;
+	z-index: 20;
+	height: 100vh;
+	background-color: #7FFFD4;
+	opacity: 0.9;
+	width: 100%;
+}
+
+.signinContent {
+	left: 42%;
+	top: 20%;
+}
+
+.remember {
+	padding-left: 20px;
+}
+
+.carousel-wrapper {
+  height:100%;
+	width: 100%;
+  position:relative;
+}
+
+#carousel-selector {
+	height: 100vh;
+}
+
+.carousel-inner {
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+.carousel-inner .item {
+	max-height: 100%;
+	width: 100%;
+}
+
+.carousel-inner .item .img {
+	max-height: 100%;
+	width: 100%;
+}
+
+.slider-size {
+	height: 100%;
+}
+
