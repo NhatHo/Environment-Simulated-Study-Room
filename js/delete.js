@@ -27,7 +27,7 @@ $(document).ready(function() {
 				}
 			});
 			if (counter == 0) {
-				deleteDisplay += '<h1 class="text-center">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1>';
+				deleteDisplay += '<h1 class="text-center">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1><br><br>';
 				$("#deleteScenes").hide();
 			} else {
 				$("#deleteScenes").show();
@@ -40,28 +40,45 @@ $(document).ready(function() {
 	});
 	$("#deleteScenes").click (function(event) {
 		var checkedScenes = [];
+		var selectedScenes = "";
 		$('[name="options"]').each(function () {
 			if($(this).is(':checked')) {
 				//console.log ("This box is checked: " + $(this).val());
 				checkedScenes.push($(this).val());
+				selectedScenes += $(this).val() + "<br/>";
 			}
 		});
 		if (checkedScenes.length > 0) {
-			
-			$.ajax({
-				url: "php/delete.php",
-				type:"post", //send it through get method
-				data:{scenes: checkedScenes},
-				success: function(response) {
-					console.log ("Response in Success: " + response);
-					window.location.reload(true);
-				},
-				error: function(xhr) {
-					console.log ("Response in error: " + response);
+			bootbox.dialog({
+				message: "Do you want to delete these scenes? <br/>" + selectedScenes,
+				title: "Confirmation",
+				buttons: {
+					confirm: {
+						label: "Confirm",
+						className: "btn-primary",
+						callback: function() {
+							$.ajax({
+								url: "php/delete.php",
+								type:"post", //send it through get method
+								data:{scenes: checkedScenes},
+								success: function(response) {
+									console.log ("Response in Success: " + response);
+									window.location.reload(true);
+								},
+								error: function(xhr) {
+									console.log ("Response in error: " + response);
+								}
+							});
+						}
+					},
+					cancel: {
+						label: "Cancel",
+						className: "btn-cancel"
+					}
 				}
 			});
 		} else {
-			alert ("At least ONE scene must be selected to DELETE");
+			bootbox.alert("At least ONE scene must be selected to DELETE");
 		}
 	});
 });

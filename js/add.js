@@ -27,10 +27,10 @@ $(document).ready(function() {
 		filters : {
 			// Maximum file size
 			max_file_size : '1000mb',
+			prevent_duplicates: true,
 			// Specify what files to browse for
 			mime_types: [
-				{title : "Image files", extensions : "jpg,gif,png"},
-				{title : "Zip files", extensions : "zip"}
+				{title : "Image files", extensions : "jpg,gif,png"}
 			]
 		},
 		multipart: true,
@@ -59,6 +59,7 @@ $(document).ready(function() {
 		// User can upload no more then 20 files in one go (sets multiple_queues to false)
 		multiple_queues: false,
 		max_file_count: 1,
+		multi_selection: false,
 		chunk_size: '1mb',
 		filters : {
 			mime_types : [
@@ -85,11 +86,9 @@ $(document).ready(function() {
 		// Silverlight settings
 		silverlight_xap_url : 'Moxie.xap'
 	});
-	$("#addSceneForm").submit (function(event){
+	$("#create").click (function(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		var formObj = $(this);
-		var postData = new FormData(this);
 		var picsUploader = $("#picsuploader").plupload('getUploader');
 		picsUploader.bind('BeforeUpload', function(up) {
 			up.settings.multipart_params.title = $('input[name="title"]').val();
@@ -99,40 +98,65 @@ $(document).ready(function() {
 			up.settings.multipart_params.title = $('input[name="title"]').val();
 		});
 		if (picsUploader.files.length > 0 && audioUploader.files.length > 0) {
-			postData.append("numImg", picsUploader.files.length);
-			postData.append("audio", $("span:contains(.mp3)").text());
-			picsUploader.bind('FileUploaded', function (){
-				audioUploader.bind('FileUploaded', function (){
-					formURL = formObj.attr("action");
-					method = formObj.attr("method");
-					$.ajax({
-						url: formURL,
-						type: method,
-						data: postData,
-						contentType: false,
-						cache: false,
-						processData: false,
-						dataType: 'json',
-						success: function(data, textStatus, jqXHR) {
-							if(typeof data.error === 'undefined')
-							{
-								$('#successMsg').show();
-							}
-							else
-							{
-								console.log('ERRORS: ' + data.error);
-							}
-						},
-						error: function (xhr, textStatus, errorThrown) {
-							$('failMsg').show();
+			var numberOfImages = picsUploader.files.length;
+			var title = $('[name="title"]').val();
+			var desc = $('[name="desc"]').val();
+			var audioFile = $("span:contains(.mp3)").text();
+			var pictureFiles = $("span:contains(.jpg)").text();
+			var pics = pictureFiles.replace(new RegExp(".jpg", 'g'), ".jpg<br/>");
+			var postData = new FormData();
+			postData.append("title", title);
+			postData.append("desc", desc);
+			postData.append("numImg", numberOfImages);
+			postData.append("audio", audioFile);
+			bootbox.dialog({
+				message: "Please confirm Scene information below: <br/>" + "<br/>Name:" + title + "<br/><br/>Description: " + desc + "<br/><br/>Pictures: " + pics + "<br/>Soundtrack: " + audioFile,
+				title: "Confirmation",
+				buttons: {
+					confirm: {
+						label: "Confirm",
+						className: "btn-primary",
+						callback: function() {
+							audioUploader.bind('UploadComplete', function (){
+								$('#picsuploader').plupload('start');
+								$('#picsuploader').on('complete', function () {
+									formURL = $("#addSceneForm").attr("action");
+									method = $("#addSceneForm").attr("method");
+									$.ajax({
+										url: formURL,
+										type: method,
+										data: postData,
+										contentType: false,
+										cache: false,
+										processData: false,
+										dataType: 'json',
+										success: function(data, textStatus, jqXHR) {
+											if(typeof data.error === 'undefined')
+											{
+												$('#successMsg').show();
+											}
+											else
+											{
+												console.log('ERRORS: ' + data.error);
+											}
+										},
+										error: function (xhr, textStatus, errorThrown) {
+											$('failMsg').show();
+										}
+									});							
+								});
+							});
+							$('#audiouploader').plupload('start');
 						}
-					});							
-                });
-            });
-            $('#picsuploader').plupload('start');
-			$('#audiouploader').plupload('start');
+					},
+					cancel: {
+						label: "Cancel",
+						className: "btn-cancel"
+					}
+				}
+			});
 		} else {
-			alert ("You must at least have 1 audio file and 1 picture or 1 video file");
+			bootbox.alert("You must have Title, Description, ONE cover picture AND ONE soundtrack");
 		}
 		return false;
 	});

@@ -6,24 +6,30 @@
 * Else it will kill the process and return error to Add.js
 */
 require_once "config.php";
+require_once 'OrganizeFolder.php';
 
 $name = $_REQUEST['title'];
 $desc = $_REQUEST['desc'];
 $numImg = $_REQUEST['numImg'];
 $audio = $_REQUEST['audio'];
-//error_log("Audio is: ".$audio);
+error_log("Audio is: ".$audio);
 $name = rtrim($name, " ");
-$path = "data/{$name}/";
+$path = FILESYSTEM."{$name}/";
 $connection = mysqli_connect (DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 // Check connection
 if (mysqli_connect_errno()) {
 	printf ("Connect failed: %s\n", mysqli_connect_error());
 	exit();
 }
-//error_log ("What happen: $name, desc: $desc, Num: $numImg, path: $path");
 $sql = "INSERT INTO scenes (name, description, numImages, path, soundtrack) VALUES ('$name', '$desc', $numImg, '$path', '$audio');";
 if (mysqli_query($connection, $sql) != true) {
 	 die("Error: ".mysqli_connect_error());
+}
+$organizer = new OrganizeFolder ($path);
+if (!$organizer->randomizeFiles()) {
+	die ("Failed to randomize the folder".$row["path"]);
+} else if (!$organizer->reorganizeFiles()){
+	die ("Failed to organize the folder".$row["path"]);
 }
 mysqli_close($connection);
 

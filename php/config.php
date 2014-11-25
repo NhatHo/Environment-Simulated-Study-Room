@@ -11,4 +11,5 @@
 	define ("DB_PASSWORD", "");
 	define ("DB_DATABASE", "environment_room");
 	define ("DB_HOST", "localhost");
+	define ("FILESYSTEM", "data/");
 ?>

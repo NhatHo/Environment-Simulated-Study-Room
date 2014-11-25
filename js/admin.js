@@ -45,7 +45,7 @@ $(document).ready(function() {
 				}
 			});
 			if (counter == 0) {
-				carouselDisplay += '<h1 class="text-center empty">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1>';
+				carouselDisplay += '<h1 class="text-center empty">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1><br><br>';
 			}
 			$('.carousel-indicators').html(indicator);
 			$('#sceneSelector').html(carouselDisplay);

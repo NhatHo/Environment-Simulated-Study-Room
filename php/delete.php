@@ -28,22 +28,26 @@ function removeFolder ($dir) {
 	return true;
 }
 foreach ($checkboxValue as $key=>$name) {
-	$sql = "SELECT * FROM scenes WHERE name='$name'";
-	$result = mysqli_query ($connection, $sql);
+	if (strlen(trim($name)) > 0) {
+		$sql = "SELECT * FROM scenes WHERE name='$name'";
+		$result = mysqli_query ($connection, $sql);
 
-	if ($result->num_rows == 1) {
-		$row = $result->fetch_assoc();
-		$dir = "../".$row["path"];
-		if(!removeFolder ($dir)) {
-			die("Cannot remove the directory and its files");
+		if ($result->num_rows == 1) {
+			$row = $result->fetch_assoc();
+			$dir = "../".$row["path"];
+			if(!removeFolder ($dir)) {
+				die("Cannot remove the directory and its files");
+			}
+			$removeSql = "DELETE FROM scenes WHERE name='$name'";
+			if (mysqli_query ($connection, $removeSql) != true) {
+				die ("Cannot remove the row from database");
+			}
+			mysqli_free_result($result);
+		} else {
+			die("Cannot find this scene in Database");
 		}
-		$removeSql = "DELETE FROM scenes WHERE name='$name'";
-		if (mysqli_query ($connection, $removeSql) != true) {
-			die ("Cannot remove the row from database");
-		}
-		mysqli_free_result($result);
 	} else {
-		die("Cannot find this scene in Database");
+		die ("Scene name is empty");
 	}
 }
 mysqli_close($connection);

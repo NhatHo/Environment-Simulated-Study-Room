@@ -1,4 +1,5 @@
 <?php
+require_once 'config.php';
 /*
 * Avoiding caching while uploading
 */
@@ -12,7 +13,7 @@ header("Pragma: no-cache");
 
 $title = $_REQUEST["title"];
 
-$targetDir = "../data/{$title}";
+$targetDir = "../".FILESYSTEM.$title;
 $cleanupTargetDir = true; // Remove old files
 $maxFileAge = 5 * 3600; // Temp file age in seconds
 // Create target dir
@@ -28,7 +29,7 @@ if (isset($_REQUEST["name"])) {
 	$fileName = uniqid("file_");
 }
 $filePath = $targetDir . DIRECTORY_SEPARATOR . $fileName;
-error_log("File Path: $filePath");
+//error_log("File Path: $filePath");
 // Chunking might be enabled
 $chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
 $chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 0;

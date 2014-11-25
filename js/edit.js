@@ -5,11 +5,48 @@
 * The div will be updated and display all available scenes in database
 */
 $(document).ready(function() {
-	mOxie.Mime.addMimeType("audio/x-aiff,aif aiff");
+	$.ajax({
+		url: 'php/retrieveScenes.php',
+		type: 'post',
+		cache: false,
+		success: function(json) {
+			var jsonObject = jQuery.parseJSON(json);
+			var editDisplay = "";
+			var counter = 0;
+			$.each(jsonObject, function(i, item) {
+				if (typeof item == 'object') {
+					
+					editDisplay += '<div class="panel panel-default col-sm-4 panelSize">'
+                        + '<div class="panel-heading paneltitle">'
+                        +  '<h3 class="panel-title">'+item.name+'</h3>'
+                        +'</div><div class="panel-body panelbody">'
+                        +'<img src="'+item.path+'image1.jpg" class="img-responsive">';
+					if (counter == 0) {
+						editDisplay += '<div class="radio"><label><input type="radio" name="optionsRadios" value="'+item.name+'" checked>'+item.name+'</label></div></div></div>';
+					} else {
+						editDisplay += '<div class="radio"><label><input type="radio" name="optionsRadios" value="'+item.name+'">'+item.name+'</label></div></div></div>';
+					}
+					counter++;
+				} else {
+					return false;
+				}
+			});
+			if (counter == 0) {
+				editDisplay += '<h1 class="text-center">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1><br><br>';
+				$("#editScenes").hide();
+			} else if (!$("#editSceneForm").is(":visible") ){
+				$("#editScenes").show();
+			}
+			$('#availableScenes').html(editDisplay);
+		},
+		error: function(xhr, desc, err) {
+			console.log(xhr + "\n" + err);
+		}
+	});
 	$("#picsuploader").plupload({
 		// General settings
 		runtimes : 'html5,flash,silverlight,html4',
-		url : 'php/picsEditUpload.php',
+		url : 'php/resourcesUploader.php',
 		// User can upload no more then 20 files in one go (sets multiple_queues to false)
 		max_file_count: 20,
 		chunk_size: '1mb',
@@ -50,13 +87,12 @@ $(document).ready(function() {
 	$("#audiouploader").plupload({
 		// General settings
 		runtimes : 'html5,flash,silverlight,html4',
-		url : 'php/audioEditUpload.php',
-		multiple_queues: false,
-		multi_selection: false,
+		url : 'php/resourcesUploader.php',
+		// User can upload no more then 20 files in one go (sets multiple_queues to false)
 		max_file_count: 1,
-		chunk_size: '5mb',
-		
-		filters: {
+		multi_selection: false,
+		chunk_size: '1mb',
+		filters : {
 			mime_types : [
 				 {title : "Movies", extensions : "avi,mov,mp4,flv"}, 
 				 {title : "Audio", extensions : "mp3"}
@@ -91,44 +127,6 @@ $(document).ready(function() {
             }
 		}
 	});
-	$.ajax({
-		url: 'php/retrieveScenes.php',
-		type: 'post',
-		cache: false,
-		success: function(json) {
-			var jsonObject = jQuery.parseJSON(json);
-			var editDisplay = "";
-			var counter = 0;
-			$.each(jsonObject, function(i, item) {
-				if (typeof item == 'object') {
-					
-					editDisplay += '<div class="panel panel-default col-sm-4 panelSize">'
-                        + '<div class="panel-heading paneltitle">'
-                        +  '<h3 class="panel-title">'+item.name+'</h3>'
-                        +'</div><div class="panel-body panelbody">'
-                        +'<img src="'+item.path+'image1.jpg" class="img-responsive">';
-					if (counter == 0) {
-						editDisplay += '<div class="radio"><label><input type="radio" name="optionsRadios" value="'+item.name+'" checked>'+item.name+'</label></div></div></div>';
-					} else {
-						editDisplay += '<div class="radio"><label><input type="radio" name="optionsRadios" value="'+item.name+'">'+item.name+'</label></div></div></div>';
-					}
-					counter++;
-				} else {
-					return false;
-				}
-			});
-			if (counter == 0) {
-				editDisplay += '<h1 class="text-center">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1>';
-				$("#editScenes").hide();
-			} else if (!$("#editSceneForm").is(":visible") ){
-				$("#editScenes").show();
-			}
-			$('#availableScenes').html(editDisplay);
-		},
-		error: function(xhr, desc, err) {
-			console.log(xhr + "\n" + err);
-		}
-	});
 	$("#cancelEdit").click (function(e) {
 		window.location.reload(true);
 		$("#editSceneForm").hide();
@@ -137,6 +135,7 @@ $(document).ready(function() {
 	$("#editScenes").click (function(e) {
 		$("#editSceneForm").show();
 		$("#viewAvaiScenes").hide();
+		$('[name="title"]').prop('readonly', true);
 		var selectedScene = "";
 		$('[name="optionsRadios"]').each(function () {
 			if($(this).is(':checked')) {
@@ -172,10 +171,11 @@ $(document).ready(function() {
 					for(i = 1; i <= numberOfFile; i++) {
 						var path = pathToData+"image"+i+".jpg";
 						var id = new Date().getTime() + Math.floor(Math.random()*10000) + 10000;
-						var file = new plupload.File(id, path);
+						var file = new plupload.File(id, path, 0);
 						file.status = plupload.DONE;
 						file.percent = 100;
 						picsUploader.addFile(file, "image"+i+".jpg");
+						picsUploader.trigger("FilesAdded");
 					}
 					
 					var audioUploader = $("#audiouploader").plupload('getUploader');
@@ -183,10 +183,9 @@ $(document).ready(function() {
 						up.settings.multipart_params.title = item.name;
 					});
 					soundtrack = $.trim(soundtrack);
-					id = new Date().getTime() + Math.floor(Math.random()*10000) + 10000;
-					file = new plupload.File(id, soundtrack);
+					var id = new Date().getTime() + Math.floor(Math.random()*10000) + 10000;
+					var file = new plupload.File(id, soundtrack, 0);
 					file.status = plupload.DONE;
-					file.type = 'mp3';
 					file.percent = 100;
 					audioUploader.addFile(file, soundtrack);
 				});
@@ -197,7 +196,7 @@ $(document).ready(function() {
 		});		
 	});
 
-	$("#edit").submit (function(event){
+	$("#editSceneForm").submit (function(event){
 		event.stopPropagation();
 		event.preventDefault();
 		var formObj = $(this);
@@ -211,37 +210,32 @@ $(document).ready(function() {
 			up.settings.multipart_params.title = $('input[name="title"]').val();
 		});
 		if (picsUploader.files.length > 0 && audioUploader.files.length > 0) {
-			postData.append("numImg", picsUploader.files.length);
-			postData.append("audio", $("span:contains(.mp3)").text());
-			picsUploader.bind('FileUploaded', function (){
-				audioUploader.bind('FileUploaded', function (){
+			audioUploader.bind('UploadComplete', function (){
+				$('#picsuploader').plupload('start');
+				$('#picsuploader').on('complete', function () {
+				//picsUploader.bind('UploadComplete', function () {
+					postData.append("numImg", picsUploader.files.length);
+					postData.append("audio", $("span:contains(.mp3)").text());
+					postData.append("images", $("span:contains(.jpg)").text());
+					console.log ("NumImg: " +$("#picsuploader").plupload('getUploader').files.length+ "Audio is: " +$("span:contains(.mp3)").text()+ " Images: " + $("span:contains(.jpg)").text());
 					formURL = formObj.attr("action");
 					method = formObj.attr("method");
 					$.ajax({
-						url: "php/editScene.php",
-						type: "POST",
+						url: formURL,
+						type: method,
 						data: postData,
 						contentType: false,
 						cache: false,
 						processData: false,
 						dataType: 'json',
 						success: function(data, textStatus, jqXHR) {
-							if(typeof data.error === 'undefined')
-							{
-								$('#successMsg').show();
-							}
-							else
-							{
-								console.log('ERRORS: ' + data.error);
-							}
 						},
 						error: function (xhr, textStatus, errorThrown) {
-							$('failMsg').show();
-						}
-					});							
-                });
+							window.location.reload(true);
+						}						
+					});
+				});
             });
-            $('#picsuploader').plupload('start');
 			$('#audiouploader').plupload('start');
 		} else {
 			alert ("You must at least have 1 audio file and 1 picture or 1 video file");

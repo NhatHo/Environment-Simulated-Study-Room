@@ -6,7 +6,6 @@
 * The information will then be used in client view, admin, edit and delete pages
 */
 require_once "config.php";
-require_once 'OrganizeFolder.php';
 $connection = mysqli_connect (DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 // Check connection
 if (mysqli_connect_errno()) {
@@ -21,12 +20,6 @@ if ($result) {
 	while ($row = $result->fetch_assoc()) {
 		$scenes[] = array("name"=>$row["name"], "description"=>$row["description"], "path"=>$row["path"]);
 		//error_log ("The path is: ".$row["path"]);
-		$organizer = new OrganizeFolder ($row["path"]);
-		if (!$organizer->randomizeFiles()) {
-			die ("Failed to randomize the folder".$row["path"]);
-		} else if (!$organizer->reorganizeFiles()){
-			die ("Failed to organize the folder".$row["path"]);
-		}
 	}
 	mysqli_free_result($result);
 } else {

@@ -53,6 +53,7 @@ $(document).ready(function() {
 			if (counter == 0) {
 				carouselDisplay += '<h1 class="text-center empty">NO AVAILABLE SCENE<br/>Please contact administrator to get scenes set up.</h1>';
 			} else {
+				window.location.reload(true);
 				$('.carousel-indicators').html(indicator);
 			}
 			$('#sceneSelector').html(carouselDisplay);
