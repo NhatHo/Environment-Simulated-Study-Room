@@ -1,4 +1,4 @@
-/*
+	/*
 * Enable carousel selection actions
 * Enable and disable login form upon buttons clicked
 */
@@ -52,14 +52,55 @@ $(document).ready(function() {
 			});
 			if (counter == 0) {
 				carouselDisplay += '<h1 class="text-center empty">NO AVAILABLE SCENE<br/>Please contact administrator to get scenes set up.</h1>';
-			} else {
-				window.location.reload(true);
-				$('.carousel-indicators').html(indicator);
 			}
+			//else {
+			//	window.location.reload(true);
+				$('.carousel-indicators').html(indicator);
+			//}
 			$('#sceneSelector').html(carouselDisplay);
 		},
 		error: function(xhr, desc, err) {
 			console.log(xhr + "\n" + err);
 		}
 	});
+	/*$("#login").click (function(event) {
+		console.log("Am I here?");
+		var username = $('input[name=username]').val();
+		var password = $('input[type=password]').val();
+		if (username.length > 0 && password.length > 0) {
+			formhash($('[name="loginForm"]'), password);
+			//var hashedPassword = hex_sha512(password);
+			//password = "";
+			/*$.ajax({
+				url: "php/process_login.php",
+				type:"post", //send it through get method
+				data:({username: username},{password: hashedPassword}),
+				success: function(response) {
+					console.log ("Response in Success: " + response);
+					window.location.reload(true);
+				},
+				error: function(xhr) {
+					console.log ("Response in error: " + response);
+				}
+			});
+		} else {
+			bootbox.alert("Something bad happened");
+		}
+	});*/
+
 });
+
+function formhash(form, username, password) {
+	//if (username.length > 0) {
+	    var p = document.createElement("input");
+
+	    form.appendChild(p);
+	    p.name = "hashedPassword";
+	    p.type = "hidden";
+	    p.value = hex_sha512(password.value);
+
+	    password.value = "";
+	 
+	    form.submit();
+	//}	
+}

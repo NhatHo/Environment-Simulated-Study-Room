@@ -7,21 +7,21 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/index.js"></script>
+	<script src="js/sha512.js"></script>
 	<title>Audio-Graphic Novel Classroom</title>
 </head>
 <body>
 	<div class="container signinForm" id="signinForm" style="display:none;">
-			<form class="signinContent form-signin col-sm-2" role="form">
-				<h2 class="form-signin-heading">Sign in</h2>
-				<input type="text" class="form-control" placeholder="Account" autofocus></input>
-				<input type="password" class="form-control" placeholder="Password"></input>
-				<label class="checkbox remember">
-					<input type="checkbox" value="remember-me">Remember Me</input><br><br>
-				</label>
-				<button class="btn btn-lg btn-primary btn-block" id="login">Sign in</button>
-				<button class="btn btn-lg btn-primary btn-block" id="closeForm")>Cancel</button>
-			</form>
-		</div>
+		<form id="loginForm" name="loginForm" action="php/process_login.php" method="post" class="signinContent form-signin col-sm-2" role="form">
+			<h2 class="form-signin-heading">Sign in</h2>
+			<input id="loginUsername" name="username" type="text" class="form-control" placeholder="Username" autofocus></input>
+			<input id="loginPassword" name="password" type="password" class="form-control" placeholder="Password"></input>
+			<label class="checkbox remember">
+				<input type="checkbox" value="remember-me">Remember Me</input><br><br>
+			</label>
+			<button class="btn btn-lg btn-primary btn-block" id="login" onclick="formhash(this.form, this.form.username, this.form.password);" >Sign in</button>
+			<button class="btn btn-lg btn-primary btn-block" id="closeForm">Cancel</button>
+		</form>
 		
 	</div>
 	<a class="btn btn-lg btn-primary signin col-sm-2" id="signinButton">Sign in</a>

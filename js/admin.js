@@ -1,4 +1,4 @@
-/*
+	/*
 * Enable carousel selection actions
 * Enable and disable login form upon buttons clicked
 */
@@ -18,6 +18,20 @@ $(document).ready(function() {
 */
 $(document).ready(function() {
 	$.ajax({
+		url: 'php/login_check.php',
+		type: 'post',
+		success: function(json) {
+			var jsonObject = jQuery.parseJSON(json);
+			//console.log("Success: "+jsonObject.loggedIn);
+			if (jsonObject.loggedIn == false) {
+				window.location.replace("index.html");
+			}
+		},
+		error: function(xhr, desc, err) {
+			console.log(xhr + "\n" + err);
+		}
+	});
+	$.ajax({
 		url: 'php/retrieveScenes.php',
 		type: 'post',
 		cache: false,
@@ -26,7 +40,7 @@ $(document).ready(function() {
 			var counter = 0;
 			var carouselDisplay = "";
 			var indicator = "";
-			$.each(jsonObject, function(i, item) {
+			$.each(jsonObject, function(i, item) {	
 				if (typeof item == 'object') {
 					if (counter == 0) {
 						carouselDisplay += '<div class="item active"';
