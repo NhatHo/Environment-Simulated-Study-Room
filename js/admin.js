@@ -22,8 +22,7 @@ $(document).ready(function() {
 		type: 'post',
 		success: function(json) {
 			var jsonObject = jQuery.parseJSON(json);
-			//console.log("Success: "+jsonObject.loggedIn);
-			if (jsonObject.loggedIn == false) {
+			if (jsonObject.result == "false") {
 				window.location.replace("index.html");
 			}
 		},

@@ -15,14 +15,14 @@ function login($username, $password, $connection) {
     if ($stmt->num_rows == 1) {
       if ($db_password == $password) {
         $user_browser = $_SERVER['HTTP_USER_AGENT'];
-        //$username = preg_replace("/[^a-zA-Z0-9_\-]+/", 
-        //                                            "", 
-        //                                            $username);
+        $username = preg_replace("/[^a-zA-Z0-9_\-]+/", 
+                                                    "", 
+                                                    $username);
         session_start();
-        $_SESSION['loggedIn'] = true;
-        //$_SESSION['username'] = $username;
-        //$_SESSION['login_string'] = hash('sha512', 
-        //          $password . $user_browser);
+        //$_SESSION['loggedIn'] = true;
+        $_SESSION['username'] = $username;
+        $_SESSION['login_string'] = hash('sha512', 
+                  $password . $user_browser);
         return true;
       }
       else {
