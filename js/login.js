@@ -5,7 +5,6 @@ $(document).ready(function() {
 		type: 'post',
 		success: function(json) {
 			var jsonObject = jQuery.parseJSON(json);
-			console.log ("Result is: " + jsonObject.result);
 			if (jsonObject.result === "true") {
 				$("#signinForm").hide();
 				$("#signOut").show();

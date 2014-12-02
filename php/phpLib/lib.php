@@ -4,7 +4,7 @@ require_once 'config.php';
 function retrieveExtension ($fileString) {
 	$extension = explode(".", $fileString);
 	$validExtension = trim(end($extension));
-	if (strpos(getPicExtensions(), $validExtension) !== false){
+	if (strpos(PICTURES, $validExtension) !== false){
 		return $validExtension;
 	} else {
 		return false;
