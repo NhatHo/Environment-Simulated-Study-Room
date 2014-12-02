@@ -16,16 +16,16 @@ html, body {
 }
 
 .signinForm {
-	position:absolute;
+	position:relative;
 	z-index: 20;
 	height: 100vh;
 	background-color: #7FFFD4;
-	opacity: 0.9;
+	opacity: 1;
 	width: 100%;
 }
 
 .signinContent {
-	left: 42%;
+	left: 33%;
 	top: 20%;
 }
 

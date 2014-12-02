@@ -1,3 +1,4 @@
+<?php
 function esc_url($url) {
  
     if ('' == $url) {
@@ -27,3 +28,4 @@ function esc_url($url) {
         return $url;
     }
 }
+?>

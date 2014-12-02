@@ -1,52 +1,41 @@
 <?php
-require_once "config.php";
+require_once "phpLib/config.php";
+require_once "phpLib/lib.php";
 require_once 'OrganizeFolder.php';
 
 if (!isset($_REQUEST['title'])) {
 	die ("Cannot find the data of this scene on file system");
 }
-$name = $_REQUEST['title'];
-$desc = $_REQUEST['desc'];
-$numImg = $_REQUEST['numImg'];
-$images = $_REQUEST['images'];
-$audio = $_REQUEST['audio'];
-//error_log ("Name is: {$name} Description: {$desc} Num of Images: {$numImg} Images are: {$images} Audio is: {$audio}", 0);
+$title = $_REQUEST['title'];
+$desc = mysql_real_escape_string($_REQUEST['desc']);
+$cover = mysql_real_escape_string($_REQUEST['cover']);
+$proj1Num = $_REQUEST['proj1Num'];
+$proj1Files = mysql_real_escape_string($_REQUEST['proj1Files']);
+$proj2Num = $_REQUEST['proj2Num'];
+$proj2Files = mysql_real_escape_string($_REQUEST['proj2Files']);
+$proj3Num = $_REQUEST['proj3Num'];
+$proj3Files = mysql_real_escape_string($_REQUEST['proj3Files']);
+$soundtrack = mysql_real_escape_string($_REQUEST['soundtrack']);
 
-$selectedItems = array();
-$selectedItems[] = trim($audio);
-$unselectedItems = array();
-$images = trim($images);
-$images = explode (".jpg", $images);
-foreach ($images as $key=>$image) {
-	$image = trim($image);
-	if (strlen($image) > 0) {
-		$selectedItems[] = $image.".jpg";
-	}
+$path = "../".FILESYSTEM.$title;
+$mainFolder = $cover." ".$soundtrack." indicator.txt"; // indicator is needed to make sure that folder won't be organized multiple times
+
+if (($connection = getConnection ()) == false) {
+	die ("Cannot retrieve connection to DB");
 }
-$connection = mysqli_connect (DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
-// Check connection
-if (mysqli_connect_errno()) {
-	printf ("Connect failed: %s\n", mysqli_connect_error());
-	exit();
-}
-$sql = "UPDATE scenes SET description='$desc', numImages=$numImg, soundtrack='$audio' WHERE name='$name'";
-if (mysqli_query($connection, $sql)) {
-	$path = "../".FILESYSTEM.$name."/";
+
+function cleanupFolder ($path, $selectedFiles) {
+	$selectedFiles = trim($selectedFiles);
 	//error_log ("The path is: $path");
+	//error_log ("The selectedFiles is: $selectedFiles");
+	$unselectedItems = array();
 	if (is_dir($path)) {
 		if ($handle = opendir($path)) {
 			while (false !== ($fileName = readdir($handle))) {
-				if ($fileName != "." && $fileName != "..") {
+				if ($fileName != "." && $fileName != ".." && is_dir($path.$fileName) === false) {
 					//error_log("Checking file: $fileName");
-					$foundFlag = false;
-					foreach ($selectedItems as $key=>$item) {
-						if ($fileName == $item) {
-							$foundFlag = true;
-							break;
-						}
-					}
-					if ($foundFlag == false) {
-						//error_log("Unfounded One was: $fileName");
+					if (strpos($selectedFiles, $fileName) === false) {
+						//error_log("File is not in the list: $fileName");
 						$unselectedItems[] = $fileName;
 					}
 				}
@@ -59,23 +48,40 @@ if (mysqli_query($connection, $sql)) {
 				}
 			}
 		} else {
-			error_log ("Cannot open the directory: $path");
+			//error_log ("Cannot open the directory: $path");
+			return false;
 		}
 	} else {
-		error_log("cannot find this Directory: $path");
+		//error_log("cannot find this Directory: $path");
+		return false;
 	}
-
-} else {
-	die("Cannot update the data of scene on database");
+	return true;
 }
-$organizer = new OrganizeFolder (FILESYSTEM.$name);
-if (!$organizer->randomizeFiles()) {
-	die ("Failed to randomize the folder".$row["path"]);
-} else if (!$organizer->reorganizeFiles()){
-	die ("Failed to organize the folder".$row["path"]);
+cleanupFolder ("$path/", $mainFolder);	
+cleanupFolder ("$path/1/", $proj1Files);	
+cleanupFolder ("$path/2/", $proj2Files);	
+cleanupFolder ("$path/3/", $proj3Files);
+if (($proj1 = retrieveExtension ($proj1Files)) != false) {
+	$proj1Files = $proj1;
+}
+if (($proj2 = retrieveExtension ($proj2Files)) != false) {
+	$proj2Files = $proj2;
+}
+if (($proj3 = retrieveExtension ($proj3Files)) != false) {
+	$proj3Files = $proj3;
+}
+$sql = "UPDATE scenes SET description='$desc', cover='$cover', proj1_num_imgs=$proj1Num, proj1_files='$proj1Files', proj2_num_imgs=$proj2Num, proj2_files='$proj2Files', proj3_num_imgs=$proj3Num, proj3_files='$proj3Files', soundtrack='$soundtrack' WHERE title='$title'";
+if (mysqli_query($connection, $sql) != true) {
+	error_log ("Failed to update database");
+	die ("Failed to update database with new information");
 }
 mysqli_close($connection);
-
+$indicator = "$path/indicator.txt";
+$myfile = fopen($indicator, "w") or die("Unable to open file!");
+$txt = "Edited";
+fwrite($myfile, $txt);
+fclose($myfile);
+echo json_encode(array("jsonrpc"=>"2.0", "result"=>null, "error"=>'undefined'));
 exit();
 
 ?>

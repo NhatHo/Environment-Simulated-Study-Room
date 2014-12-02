@@ -5,6 +5,32 @@
 * The div will be updated and display all available scenes in database
 */
 $(document).ready(function() {
+	$("#logout").click(function() {
+		$.ajax({
+			url: 'php/logout.php',
+			type: 'post',
+			success: function() {
+				console.log ("Successfully logged out");
+				window.location.reload(true);
+			},
+			error: function(xhr, desc, err) {
+				console.log(xhr + "\n" + err);
+			}
+		});
+	});
+	$.ajax({
+		url: 'php/login_check.php',
+		type: 'post',
+		success: function(json) {
+			var jsonObject = jQuery.parseJSON(json);
+			if (jsonObject.result === "false") {
+				window.location.replace("index.html");
+			}
+		},
+		error: function(xhr, desc, err) {
+			console.log(xhr + "\n" + err);
+		}
+	});
 	$.ajax({
 		url: 'php/retrieveScenes.php',
 		type: 'post',
@@ -17,10 +43,10 @@ $(document).ready(function() {
 				if (typeof item == 'object') {
 					deleteDisplay += '<div class="panel panel-default col-sm-4 panelSize">'
                         + '<div class="panel-heading paneltitle">'
-                        +  '<h3 class="panel-title">'+item.name+'</h3>'
+                        +  '<h3 class="panel-title">'+item.title+'</h3>'
                         +'</div><div class="panel-body panelbody">'
-                        +'<img src="'+item.path+'image1.jpg" class="img-responsive">'
-						+'<div class="checkbox"><label><input type="checkbox" name="options" value="'+item.name+'">'+item.name+'</label></div></div></div>';
+                        +'<img src="'+item.coverImage+'" class="img-responsive">'
+						+'<div class="checkbox"><label><input type="checkbox" name="options" value="'+item.title+'">'+item.title+'</label></div></div></div>';
 					counter ++;
 				} else {
 					return false;

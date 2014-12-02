@@ -1,29 +1,29 @@
 <?php
-require_once 'config.php';
-$sceneName = $_POST['name'];
+require_once "phpLib/config.php";
+require_once "phpLib/lib.php";
 
-if (!isset($sceneName)) {
+$title = $_REQUEST['title'];
+
+if (!isset($title)) {
 	die ("Scene name was not passed in");
 }
-$connection = mysqli_connect (DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
-// Check connection
-if (mysqli_connect_errno()) {
-	printf ("Connect failed: %s\n", mysqli_connect_error());
-	exit();
+$title = trim($title);
+
+if (($connection = getConnection()) == false) {
+	die ("Cannot retrieve connection to DB");
 }
 
-$sql = "SELECT * FROM scenes WHERE name='$sceneName'";
-$result = mysqli_query($connection, $sql);
+$sql = "SELECT * FROM scenes WHERE title='$title'";
+$result = mysqli_query($connection, $sql, MYSQLI_USE_RESULT);
 $info = array();
-if($result->num_rows == 1) {
-	$row = $result->fetch_assoc();
-	$info[] = $row;
+if($result) {
+	$info = $result->fetch_assoc();
 	mysqli_free_result($result);
 } else {
+	error_log ("Cannot find the information of this scene");
 	die("Cannot find the information of this scene");
 }
-mysqli_close($connection);
 echo json_encode($info);
-unset($info);
+mysqli_close($connection);
 exit();
 ?>

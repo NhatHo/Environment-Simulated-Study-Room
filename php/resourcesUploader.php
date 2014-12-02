@@ -1,5 +1,6 @@
 <?php
-require_once 'config.php';
+require_once "phpLib/config.php";
+require_once "phpLib/lib.php";
 /*
 * Avoiding caching while uploading
 */
@@ -12,8 +13,12 @@ header("Pragma: no-cache");
 @set_time_limit(5 * 60);
 
 $title = $_REQUEST["title"];
+if (isset($_REQUEST["projector"])) {
+	$targetDir = "../".FILESYSTEM.$title."/".$_REQUEST["projector"];
+} else {
+	$targetDir = "../".FILESYSTEM.$title;
+}
 
-$targetDir = "../".FILESYSTEM.$title;
 $cleanupTargetDir = true; // Remove old files
 $maxFileAge = 5 * 3600; // Temp file age in seconds
 // Create target dir
