@@ -14,10 +14,11 @@ class SceneConductor {
     
     const MEM_KEY = 3010;
     const PRC_VAR_KEY = 3011;
-    const SDP_URL = "http://10.0.0.1/data/"; //CHANGE ME !!
-    const SDP_LOC = '/path/to/data/'; //CHANGE ME !!
+    const SDP_URL = "http://10.0.0.1/data/"; //CONFIGURE ME !!
+    const SDP_LOC = '/path/to/data/'; //CONFIGURE ME !!
     
     protected $processObjects; // array of process objects
+    protected $remotes; // array of remote controls established
     protected $countRtpStreams; // number of RTP streams opened.
 
     protected $shm; // shared memory identifier
@@ -27,12 +28,13 @@ class SceneConductor {
 
     /**
      * 
-     * @param type $sceneDisc
-     * @param type $proceses an array of PIDs that must be killed if 
+     * @param type $sceneDisc an array which describes the locations to stream
+     *      to and which resources to stream.
      */
     public function __construct($sceneDisc) {
         $this->sceneDisc = $sceneDisc;
         $this->processObjects = array();
+        $this->remotes = array();
         //connect to persistent mem, and retrieve the process list
         $this->shm = shm_attach(MEM_KEY);
         $this->processes = shm_get_var($this->shm, PRC_VAR_KEY);
@@ -103,6 +105,7 @@ class SceneConductor {
         $remote = new RemoteControl($component[0], $component[1]);
         $remote->queue($url);
         $remote->play();
+        array_push($this->remotes, $remote);
     }
 
     protected function video($component) {
@@ -129,6 +132,7 @@ class SceneConductor {
         $remote = new RemoteControl($component[0], $component[1]);
         $remote->queue($url);
         $remote->play();
+        array_push($this->remotes, $remote);
     }
     
     protected function audio($component) {
@@ -155,9 +159,15 @@ class SceneConductor {
         $remote = new RemoteControl($component[0], $component[1]);
         $remote->queue($url);
         $remote->play();
+        array_push($this->remotes, $remote);
     }
 
     public function stop() {
+        if(count($this->remotes > 0)) {
+            foreach ($this->remotes as $remote) {
+                $remote->stop();
+            }
+        }
         if(count($this->processObjects) > 0){
             foreach($this->processObjects as $proc) {
                 //gracefully end streams
