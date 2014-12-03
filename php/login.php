@@ -4,7 +4,6 @@ function login($username, $password, $connection) {
     $stmt->bind_param('s', $username);
     $stmt->execute();
     $stmt->store_result();
-
     $stmt->bind_result($db_password, $salt);
     $stmt->fetch();
     $password = hash('sha512', $password . $salt);

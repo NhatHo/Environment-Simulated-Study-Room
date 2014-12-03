@@ -1,5 +1,3 @@
-
-
 /*
 * index.js
 * Make an AJAX call to retrieveScenes.php script
@@ -11,25 +9,19 @@ $(document).ready(function() {
 	* Enable carousel selection actions
 	* Enable and disable login form upon buttons clicked
 	*/
-	$('#signinButton').click(function() {
-		$('#signinForm').show();
-	});
-	$('#closeForm').click(function(){
-		$('#signinForm').hide();
-	});
 	$("#carousel-selector").on("swiperight", function() {
 		$("#carousel-selector").carousel('prev');
 	});
 	$("#carousel-selector").on("swipeleft", function() {
 		$("#carousel-selector").carousel('next');
 	});
-	$("#signinButton").click(function() {
+	$("#signoutButton").click(function() {
 		$.ajax({
 			url: 'php/logout.php',
 			type: 'post',
 			success: function() {
 				console.log ("Successfully logged out");
-				window.location.reload(true);
+				window.location.replace("index.html");
 			},
 			error: function(xhr, desc, err) {
 				console.log(xhr + "\n" + err);
@@ -39,9 +31,12 @@ $(document).ready(function() {
 	$.ajax({
 		url: 'php/login_check.php',
 		type: 'post',
+		cache: false,
+		data: {page:'studentAllowed'},
 		success: function(json) {
 			var jsonObject = jQuery.parseJSON(json);
 			if (jsonObject.result === "false") {
+				//console.log ("What the hell happened here?");
 				window.location.replace("index.html");
 			}
 		},
@@ -86,8 +81,5 @@ $(document).ready(function() {
 		error: function(xhr, desc, err) {
 			console.log(xhr + "\n" + err);
 		}
-	});
-	$('[name="play"]').on ('click', function(){
-		console.log ($(this).attr("value"));
 	});
 });

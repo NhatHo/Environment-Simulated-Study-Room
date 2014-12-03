@@ -3,6 +3,8 @@ $(document).ready(function() {
 	$.ajax({
 		url: 'php/login_check.php',
 		type: 'post',
+		cache: false,
+		data: {page:'studentAllowed'},
 		success: function(json) {
 			var jsonObject = jQuery.parseJSON(json);
 			if (jsonObject.result === "true") {
@@ -39,7 +41,6 @@ function formhash(form, username, password) {
 	    p.name = "hashedPassword";
 	    p.type = "hidden";
 	    p.value = hex_sha512(password.value);
-
 	    password.value = "";
 	 
 	    form.submit();

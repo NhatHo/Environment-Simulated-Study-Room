@@ -14,7 +14,7 @@ $(document).ready(function() {
 			type: 'post',
 			success: function() {
 				console.log ("Successfully logged out");
-				window.location.reload(true);
+				window.location.replace("index.html");
 			},
 			error: function(xhr, desc, err) {
 				console.log(xhr + "\n" + err);
@@ -24,10 +24,14 @@ $(document).ready(function() {
 	$.ajax({
 		url: 'php/login_check.php',
 		type: 'post',
+		data:{page:'adminOnly'},
 		success: function(json) {
 			var jsonObject = jQuery.parseJSON(json);
 			if (jsonObject.result === "false") {
 				window.location.replace("index.html");
+			}
+			else if (jsonObject.result === "ignored") {
+				window.location.replace("client.html");
 			}
 		},
 		error: function(xhr, desc, err) {

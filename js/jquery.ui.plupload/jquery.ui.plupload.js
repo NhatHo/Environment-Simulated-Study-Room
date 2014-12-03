@@ -794,6 +794,7 @@ $.widget("ui.plupload", {
 				.end();
 		
 		$('.plupload_header', this.container).append(popup);
+		setInterval(function () {popup.remove();}, 3000);
 	},
 
 	
