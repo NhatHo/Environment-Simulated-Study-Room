@@ -64,7 +64,7 @@ $(document).ready(function() {
 				}
 			});
 			if (counter == 0) {
-				editDisplay += '<h1 class="text-center">No Available Scene, Please create at least ONE<small><br/><a href="addscene.html" class="text-center">Add Scene</a></small></h1><br><br>';
+				editDisplay += '<h1 class="text-center">No Available Scene, Please create at least ONE<small><br/><a href="addScene.html" class="text-center">Add Scene</a></small></h1><br><br>';
 				$("#editScenes").hide();
 			} else if (!$("#editSceneForm").is(":visible") ){
 				$("#editScenes").show();
