@@ -12,8 +12,8 @@
 	define ("AUDIO", "mp3");
 	define ("VIDEO", "mov mp4 f4v flv avi");
 	define ("SECURE", FALSE);
-	define ("ABSOLUTEPATH", "C://xampp/htdocs/Environment-Simulated-Study-Room/data");
-	define ("SDPLOCATION", "localhost/Environment-Simulated-Study-Room/data");
+	define ("ABSOLUTEPATH", "/opt/lampp/htdocs/Environment-Simulated-Study-Room/data/");
+	define ("SDPLOCATION", "////home/nhatho/sdps/");
 	define ("AUDIOPI", "10.0.0.21");
 	define ("PROJECTOR1", "10.0.0.22");
 	define ("PROJECTOR2", "10.0.0.23");

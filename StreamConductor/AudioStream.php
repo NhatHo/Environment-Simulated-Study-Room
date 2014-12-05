@@ -11,7 +11,7 @@
  *
  * @author Noah
  */
-class AudioStream extends MediaStream{
+class AudioStream {
     
     protected $process;
     protected $pipes;

@@ -1,5 +1,4 @@
 <?php
-require_once 'MediaStream.pnp';
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,7 +10,7 @@ require_once 'MediaStream.pnp';
  *
  * @author Noah Kipin
  */
-class SlideshowStream extends MediaStream{
+class SlideshowStream {
     
     protected $process;
     protected $pipes;
@@ -29,7 +28,7 @@ class SlideshowStream extends MediaStream{
         }
         $framerate = '1/'.sprintf("%u",floor($displayDuration));
         
-        setupSlideshow($path, $framerate);
+        $this->setupSlideshow($path, $framerate);
     }
     
 //    public function __destruct() {
@@ -42,8 +41,8 @@ class SlideshowStream extends MediaStream{
      * @param type $framerate
      */
     protected function setupSlideshow($path, $framerate) {
-        $cmd = 'ffmpeg -framerate '.$framerate.' -i '
-                .$path.' -c:v libx264 -r 30 -pix_fmt yuv420p -';
+        $cmd = 'ffmpeg -loop 1 -framerate '.$framerate.'-pattern_type glob -i \''
+                .trim($path).'\' -c:v libx264 -';
         
         $this->process = proc_open($cmd, array(
             '0' => array('pipe', 'r'),

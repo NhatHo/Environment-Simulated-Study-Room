@@ -23,7 +23,7 @@ $cleanupTargetDir = true; // Remove old files
 $maxFileAge = 5 * 3600; // Temp file age in seconds
 // Create target dir
 if (!file_exists($targetDir)) {
-	@mkdir($targetDir, 0700);
+	@mkdir($targetDir, 0777);
 }
 // Get a file name
 if (isset($_REQUEST["name"])) {

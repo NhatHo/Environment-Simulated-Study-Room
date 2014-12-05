@@ -15,18 +15,18 @@ class RTPStream{
     
     protected $process;
     protected $pipes;
+    protected $file;
 
     public function __construct(
-            $streamingResource
-            ,$address = '239.0.0.1'
-            ,$port = 5004
-            ,$sdpLocation = "/tmp/www/sdp1.sdp") {
+            $streamingResource,
+            $address = '239.0.0.1',
+            $port = 5004,
+            $sdpLocation = "/tmp/www/sdp1.sdp") {
         
-        $this->inputPipe=$streamingResource;
+        $this->inputPipe=trim($streamingResource);
         $this->multicastAddress = $address;
         $this->multicastPort = $port;
         $this->sdpLocation = $sdpLocation;
-        
         $this->stream();
     }
     
@@ -35,16 +35,16 @@ class RTPStream{
 //    }
     
     protected function stream() {
-        $cmd = 'vlc -vvv input_stream --sout\'#rtp{dst='
-                .$this->multicastAddress
-                .',port='.strval($this->multicastPort)
-                .',sdp='.$this->sdpLocation + '}\'';
-
+	$cmd = "vlc -vvv '".$this->inputPipe."' --sout '#rtp{dst=".$this->multicastAddress.",port=".strval($this->multicastPort).",sdp=file:".$this->sdpLocation."}'";
+	error_log ("Command: ".$cmd);
+	error_log ("Expecte: vlc -vvv - --sout '#rtp{dst=239.0.0.1,port=50004,sdp=file://~/htdocs/streaminfo.sdp}'");
         //`ffmpeg $resource - | vlc -vvv input_stream --sout '#rtp{dst=239.0.0.1,port=50004,sdp=file://~/htdocs/streaminfo.sdp}'`;
-
+	error_log ("The location is: ".$this->sdpLocation);
+	error_log ("Multicast address: " . $this->multicastAddress . " Port: ".strval($this->multicastPort));
         //TODO: test this method of piping transcoded data
         $this->process = proc_open($cmd, array(
-            '0' => $this->inputPipe,
+            //'0' => $this->inputPipe,
+            '0' => array('pipe', 'r'),
             '1' => array('pipe', 'w'),
             '2' => array('file', '/tmp/rtpstream_error', 'a')
                 ), $this->pipes);
@@ -67,6 +67,7 @@ class RTPStream{
 
 
     protected function closePipes() {
+        fclose($this->pipes[0]);
         fclose($this->pipes[1]);
     }
 

@@ -1,11 +1,10 @@
 <?php
-require_once 'MediaStream.php';
 /**
  * Description of VideoTranscoder
  *
  * @author Noah Kipin
  */
-class VideoTranscoder extends MediaStream{
+class VideoTranscoder {
     
     protected $process;
     protected $pipes;

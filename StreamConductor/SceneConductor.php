@@ -4,18 +4,20 @@ require_once 'SlideshowStream.php';
 require_once 'VideoTranscoder.php';
 require_once 'RTPStream.php';
 require_once 'AudioStream.php';
+require_once '../php/phpLib/config.php';
 
 /**
  * Description of SceneConductor
  *
  * @author Noah
  */
-class SceneConductor {
+define ("MEM_KEY",3010);
+define ("PRC_VAR_KEY", 3011);
+define ("SDP_URL","http://10.0.0.2/Environment-Simulated-Study-Room/data/sdps/"); //CONFIGURE ME !!
+define ("SDP_LOC", ABSOLUTEPATH); //CONFIGURE ME !!
     
-    const MEM_KEY = 3010;
-    const PRC_VAR_KEY = 3011;
-    const SDP_URL = "http://10.0.0.1/data/"; //CONFIGURE ME !!
-    const SDP_LOC = '/path/to/data/'; //CONFIGURE ME !!
+
+class SceneConductor {
     
     protected $processObjects; // array of process objects
     protected $remotes; // array of remote controls established
@@ -56,6 +58,7 @@ class SceneConductor {
         
         if(key_exists('video', $this->sceneDisc)) {
             foreach ($this->sceneDisc['video'] as $component) {
+                error_log($component);
                 switch ($component[2]){ //switch based on type of stream
                     case 'slideshow':
                         $this->slideshow($component);
@@ -83,6 +86,9 @@ class SceneConductor {
 
     protected function slideshow($component) {
         $vidstream = new SlideshowStream($component[3]);
+	if(!is_resource($vidstream)) {
+            error_log("did not get pipe from ffmpeg");
+        }
         array_push($this->processes, $vidstream->getPid());
         array_push($this->processObjects, $vidstream);
         
@@ -92,7 +98,7 @@ class SceneConductor {
                 $vidstream->getOutputPipe(),
                 '239.0.0.1',
                 50004+2*$this->countRtpStreams,
-                SDP_LOC.$sdpfilename);
+                SDPLOCATION.$sdpfilename);
         
         array_push($this->processes, $rtpstream->getPid());
         shm_put_var($this->shm, PRC_VAR_KEY, $this->processes); //update shared mem
@@ -109,17 +115,18 @@ class SceneConductor {
     }
 
     protected function video($component) {
-        $vidstream = new VideoTranscoder($component[3]);
-        array_push($this->processes, $vidstream->getPid());
-        array_push($this->processObjects, $vidstream);
+        //$vidstream = new VideoTranscoder($component[3]);
+        //array_push($this->processes, $vidstream->getPid());
+        //array_push($this->processObjects, $vidstream);
         
         $sdpfilename = sprintf("sdp%u.sdp", $this->countRtpStreams);
         
         $rtpstream = new RTPStream(
-                $vidstream->getOutputPipe(),
+                //$vidstream->getOutputPipe(),
+                $component[3],
                 '239.0.0.1',
                 50004+2*$this->countRtpStreams,
-                SDP_LOC.$sdpfilename);
+                SDPLOCATION.$sdpfilename);
         
         array_push($this->processes, $rtpstream->getPid());
         shm_put_var($this->shm, PRC_VAR_KEY, $this->processes); //update shared mem
@@ -136,17 +143,15 @@ class SceneConductor {
     }
     
     protected function audio($component) {
-        $audiostream = new AudioStream($component[3]);
-        array_push($this->processes, $audiostream->getPid());
-        array_push($this->processObjects, $audiostream);
         
         $sdpfilename = sprintf("sdp%u.sdp", $this->countRtpStreams);
         
         $rtpstream = new RTPStream(
-                $audiostream->getOutputPipe(),
+                $component[2],
                 '239.0.0.1',
                 50004+2*$this->countRtpStreams,
-                SDP_LOC.$sdpfilename);
+                SDPLOCATION.$sdpfilename
+        );
         
         array_push($this->processes, $rtpstream->getPid());
         shm_put_var($this->shm, PRC_VAR_KEY, $this->processes); //update shared mem

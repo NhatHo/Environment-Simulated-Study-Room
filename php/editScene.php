@@ -1,7 +1,7 @@
 <?php
 require_once "phpLib/config.php";
 require_once "phpLib/lib.php";
-require_once 'OrganizeFolder.php';
+require_once 'organizeFolder.php';
 
 if (!isset($_REQUEST['title'])) {
 	die ("Cannot find the data of this scene on file system");
